@@ -259,7 +259,7 @@ class VpnManager {
   /// 根据分应用 VPN 设置计算需要传递给系统的应用列表。
   ///
   /// 本应用自身始终不走 VPN（白名单模式下自身也不会出现在列表中）。
-  /// 白名单为空时回退为全部应用直连，避免空列表被系统当作“不限制”。
+  /// 白名单为空时回退为“全部应用”模式（仅排除自身）。
   ({List<String> allowed, List<String> disallowed}) _resolveAppFilter(
     VpnState vpnState,
   ) {
@@ -287,7 +287,7 @@ class VpnManager {
         if (allowed.isEmpty) {
           Diagnostics.logger(DiagnosticModules.vpn).warning(
             'vpn.app_filter.allowlist_empty',
-            'Per-app VPN allowlist is empty; routing all apps directly',
+            'Per-app VPN allowlist is empty; falling back to routing all apps through the VPN',
             fields: {
               'mode': 'allowlist',
               'selected_count': selected.length,
