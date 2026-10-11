@@ -82,6 +82,10 @@ class AppSettingsService {
           : WindowCloseBehavior.exitProgram,
     );
     vpnState.setAndroidVpnRoutes(List<String>.from(settings.androidVpnRoutes));
+    vpnState.setAndroidVpnAppMode(
+      AndroidVpnAppMode.fromIndex(settings.androidVpnAppMode),
+    );
+    vpnState.setAndroidVpnApps(List<String>.from(settings.androidVpnApps));
   }
 
   Future<void> updatePlayerName(String name) async {
@@ -213,5 +217,16 @@ class AppSettingsService {
     vpnState.setAndroidVpnRoutes(
       List<String>.from((await _repo.get()).androidVpnRoutes),
     );
+  }
+
+  Future<void> setAndroidVpnAppMode(AndroidVpnAppMode mode) async {
+    vpnState.setAndroidVpnAppMode(mode);
+    await _repo.update((s) => s.androidVpnAppMode = mode.indexValue);
+  }
+
+  Future<void> setAndroidVpnApps(List<String> packages) async {
+    final unique = packages.toSet().toList();
+    vpnState.setAndroidVpnApps(unique);
+    await _repo.update((s) => s.androidVpnApps = unique);
   }
 }

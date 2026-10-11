@@ -1,4 +1,5 @@
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+import 'installed_app.dart';
 import 'vpn_service_plugin_method_channel.dart';
 
 abstract class VpnServicePluginPlatform extends PlatformInterface {
@@ -23,6 +24,7 @@ abstract class VpnServicePluginPlatform extends PlatformInterface {
     List<String>? routes,
     String? dns,
     List<String>? disallowedApplications,
+    List<String>? allowedApplications,
     int? mtu,
     String? connectionAttemptId,
   }) {
@@ -31,6 +33,10 @@ abstract class VpnServicePluginPlatform extends PlatformInterface {
 
   Future<void> stopVpn() {
     throw UnimplementedError('stopVpn() 未实现.');
+  }
+
+  Future<List<InstalledApp>> getInstalledApps() {
+    throw UnimplementedError('getInstalledApps() 未实现.');
   }
 
   Future<void> configureLogging({required String minimumLevel}) {

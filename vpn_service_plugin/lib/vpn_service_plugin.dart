@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
+import 'installed_app.dart';
 import 'vpn_service_plugin_platform_interface.dart';
 
 class VpnServicePlugin {
@@ -29,12 +30,15 @@ class VpnServicePlugin {
   /// [routes] - VPN 路由表
   /// [dns] - DNS 服务器地址
   /// [disallowedApplications] - 不允许使用 VPN 的应用包名列表
+  /// [allowedApplications] - 仅允许使用 VPN 的应用包名列表（白名单模式，
+  /// 非空时忽略 [disallowedApplications]）
   /// [mtu] - 最大传输单元
   Future<Map<String, dynamic>> startVpn({
     String? ipv4Addr,
     List<String>? routes,
     String? dns,
     List<String>? disallowedApplications,
+    List<String>? allowedApplications,
     int? mtu,
     String? connectionAttemptId,
   }) {
@@ -43,6 +47,7 @@ class VpnServicePlugin {
       routes: routes,
       dns: dns,
       disallowedApplications: disallowedApplications,
+      allowedApplications: allowedApplications,
       mtu: mtu,
       connectionAttemptId: connectionAttemptId,
     );
@@ -83,5 +88,10 @@ class VpnServicePlugin {
     return VpnServicePluginPlatform.instance.configureLogging(
       minimumLevel: minimumLevel,
     );
+  }
+
+  /// 获取设备上可启动的应用列表（用于分应用 VPN 选择器）。
+  Future<List<InstalledApp>> getInstalledApps() {
+    return VpnServicePluginPlatform.instance.getInstalledApps();
   }
 }

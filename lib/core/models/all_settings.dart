@@ -18,6 +18,12 @@ class AllSettings {
   /// Android VPN 额外路由
   List<String> androidVpnRoutes = [];
 
+  /// Android 分应用 VPN 模式（0: 全部应用, 1: 黑名单, 2: 白名单）
+  int androidVpnAppMode = 0;
+
+  /// Android 分应用 VPN 选中的应用包名列表
+  List<String> androidVpnApps = [];
+
   /// 使用紧凑节点卡片
   bool compactPeerCards = true;
 

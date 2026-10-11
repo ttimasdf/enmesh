@@ -7,6 +7,7 @@ import 'package:enmesh/core/diagnostics/log_policy.dart';
 import 'package:enmesh/core/diagnostics/log_severity.dart';
 import 'package:enmesh/core/platform/build_brand.dart';
 import 'package:enmesh/core/services/service_manager.dart';
+import 'package:enmesh/core/states/vpn_state.dart';
 import 'package:enmesh/shared/utils/network/ip_utils.dart';
 import 'package:vpn_service_plugin/vpn_service_plugin.dart';
 import 'package:enmesh/src/rust/api/simple.dart';
@@ -209,7 +210,6 @@ class VpnManager {
   Future<void> start({
     required String ipv4Addr,
     int mtu = 1300,
-    List<String> disallowedApplications = const [BuildBrand.packageId],
     List<String> proxyCidrs = const [],
     String? connectionAttemptId,
   }) async {
@@ -224,8 +224,9 @@ class VpnManager {
       finalIpv4 = '$ipv4Addr/24';
     }
 
+    final vpnState = ServiceManager().vpnState;
     final customRoutes =
-        ServiceManager().vpnState.androidVpnRoutes.value
+        vpnState.androidVpnRoutes.value
             .where((route) => isValidCIDR(route))
             .toList();
 
@@ -234,6 +235,8 @@ class VpnManager {
       ...proxyCidrs.where((route) => isValidCIDR(route)),
     ];
 
+    final appFilter = _resolveAppFilter(vpnState);
+
     final completer = Completer<void>();
     _vpnStartCompleter = completer;
     try {
@@ -241,7 +244,8 @@ class VpnManager {
         ipv4Addr: finalIpv4,
         mtu: mtu,
         routes: routes,
-        disallowedApplications: disallowedApplications,
+        disallowedApplications: appFilter.disallowed,
+        allowedApplications: appFilter.allowed,
         connectionAttemptId: connectionAttemptId,
       );
       await completer.future.timeout(const Duration(seconds: 10));
@@ -249,6 +253,52 @@ class VpnManager {
       if (identical(_vpnStartCompleter, completer)) {
         _vpnStartCompleter = null;
       }
+    }
+  }
+
+  /// 根据分应用 VPN 设置计算需要传递给系统的应用列表。
+  ///
+  /// 本应用自身始终不走 VPN（白名单模式下自身也不会出现在列表中）。
+  /// 白名单为空时回退为全部应用直连，避免空列表被系统当作“不限制”。
+  ({List<String> allowed, List<String> disallowed}) _resolveAppFilter(
+    VpnState vpnState,
+  ) {
+    final mode = vpnState.androidVpnAppMode.value;
+    final selected = vpnState.androidVpnApps.value;
+
+    switch (mode) {
+      case AndroidVpnAppMode.disabled:
+        return (
+          allowed: const [],
+          disallowed: [BuildBrand.packageId],
+        );
+      case AndroidVpnAppMode.denylist:
+        return (
+          allowed: const [],
+          disallowed: {
+            BuildBrand.packageId,
+            ...selected,
+          }.toList(),
+        );
+      case AndroidVpnAppMode.allowlist:
+        final allowed = selected
+            .where((package) => package != BuildBrand.packageId)
+            .toList();
+        if (allowed.isEmpty) {
+          Diagnostics.logger(DiagnosticModules.vpn).warning(
+            'vpn.app_filter.allowlist_empty',
+            'Per-app VPN allowlist is empty; routing all apps directly',
+            fields: {
+              'mode': 'allowlist',
+              'selected_count': selected.length,
+            },
+          );
+          return (
+            allowed: const [],
+            disallowed: [BuildBrand.packageId],
+          );
+        }
+        return (allowed: allowed, disallowed: const []);
     }
   }
 

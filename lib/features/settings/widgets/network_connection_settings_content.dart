@@ -1,8 +1,10 @@
 import 'package:enmesh/core/services/service_manager.dart';
 import 'package:enmesh/core/states/connection_state.dart';
+import 'package:enmesh/core/states/vpn_state.dart';
 import 'package:enmesh/generated/locale_keys.g.dart';
 import 'package:enmesh/features/settings/pages/network/listen_list_page.dart';
 import 'package:enmesh/features/settings/pages/network/port_whitelist_page.dart';
+import 'package:enmesh/features/settings/pages/network/vpn_apps_page.dart';
 import 'package:enmesh/features/settings/pages/network/vpn_segment_page.dart';
 import 'package:enmesh/features/settings/models/settings_availability.dart';
 import 'package:enmesh/features/settings/widgets/network_settings_sections.dart';
@@ -83,6 +85,8 @@ class NetworkConnectionSettingsContent extends StatelessWidget {
     final services = ServiceManager();
     const androidVpnRoutesAvailability =
         SettingsAvailability.androidOnlyDiscoverable;
+    const androidVpnAppsAvailability =
+        SettingsAvailability.androidOnlyDiscoverable;
 
     return Watch((context) {
       final network = services.networkConfigState;
@@ -113,6 +117,8 @@ class NetworkConnectionSettingsContent extends StatelessWidget {
       final bindDevice = network.bindDevice.watch(context);
       final listenCount = services.playerState.listenList.watch(context).length;
       final vpnCount = services.vpnState.androidVpnRoutes.watch(context).length;
+      final vpnAppMode = services.vpnState.androidVpnAppMode.watch(context);
+      final vpnAppCount = services.vpnState.androidVpnApps.watch(context).length;
       final tcpWhitelist = network.tcpWhitelist.watch(context);
       final udpWhitelist = network.udpWhitelist.watch(context);
 
@@ -235,6 +241,28 @@ class NetworkConnectionSettingsContent extends StatelessWidget {
                           : null,
                   enabled: androidVpnRoutesAvailability.isEnabled,
                   onTap: () => _open(context, const VpnSegmentPage()),
+                ),
+              if (androidVpnAppsAvailability.isVisible)
+                SettingsLinkTile(
+                  icon: Icons.apps_outlined,
+                  title: LocaleKeys.android_vpn_apps.tr(),
+                  subtitle:
+                      androidVpnAppsAvailability.currentUnavailableReasonKey
+                          ?.tr() ??
+                      LocaleKeys.android_vpn_apps_desc.tr(),
+                  value:
+                      androidVpnAppsAvailability.isEnabled
+                          ? switch (vpnAppMode) {
+                              AndroidVpnAppMode.disabled =>
+                                LocaleKeys.android_vpn_apps_value_all.tr(),
+                              AndroidVpnAppMode.denylist =>
+                                '${LocaleKeys.android_vpn_app_mode_denylist.tr()} · $vpnAppCount',
+                              AndroidVpnAppMode.allowlist =>
+                                '${LocaleKeys.android_vpn_app_mode_allowlist.tr()} · $vpnAppCount',
+                            }
+                          : null,
+                  enabled: androidVpnAppsAvailability.isEnabled,
+                  onTap: () => _open(context, const VpnAppsPage()),
                 ),
               SettingsLinkTile(
                 icon: Icons.security_outlined,

@@ -17,98 +17,108 @@ const AllSettingsSchema = CollectionSchema(
   name: r'AllSettings',
   id: 7675443445704401613,
   properties: {
-    r'androidVpnRoutes': PropertySchema(
+    r'androidVpnAppMode': PropertySchema(
       id: 0,
+      name: r'androidVpnAppMode',
+      type: IsarType.long,
+    ),
+    r'androidVpnApps': PropertySchema(
+      id: 1,
+      name: r'androidVpnApps',
+      type: IsarType.stringList,
+    ),
+    r'androidVpnRoutes': PropertySchema(
+      id: 2,
       name: r'androidVpnRoutes',
       type: IsarType.stringList,
     ),
     r'automaticUpdateChecks': PropertySchema(
-      id: 1,
+      id: 3,
       name: r'automaticUpdateChecks',
       type: IsarType.bool,
     ),
     r'closeToTray': PropertySchema(
-      id: 2,
+      id: 4,
       name: r'closeToTray',
       type: IsarType.bool,
     ),
     r'compactPeerCards': PropertySchema(
-      id: 3,
+      id: 5,
       name: r'compactPeerCards',
       type: IsarType.bool,
     ),
     r'connectAfterLaunch': PropertySchema(
-      id: 4,
+      id: 6,
       name: r'connectAfterLaunch',
       type: IsarType.bool,
     ),
     r'connectionNotificationEnabled': PropertySchema(
-      id: 5,
+      id: 7,
       name: r'connectionNotificationEnabled',
       type: IsarType.bool,
     ),
     r'connectionRetryLimit': PropertySchema(
-      id: 6,
+      id: 8,
       name: r'connectionRetryLimit',
       type: IsarType.long,
     ),
     r'launchAtLogin': PropertySchema(
-      id: 7,
+      id: 9,
       name: r'launchAtLogin',
       type: IsarType.bool,
     ),
     r'launchToTray': PropertySchema(
-      id: 8,
+      id: 10,
       name: r'launchToTray',
       type: IsarType.bool,
     ),
     r'missionControlOverridesJson': PropertySchema(
-      id: 9,
+      id: 11,
       name: r'missionControlOverridesJson',
       type: IsarType.string,
     ),
     r'peerDisplayMode': PropertySchema(
-      id: 10,
+      id: 12,
       name: r'peerDisplayMode',
       type: IsarType.long,
     ),
     r'peerListeners': PropertySchema(
-      id: 11,
+      id: 13,
       name: r'peerListeners',
       type: IsarType.stringList,
     ),
     r'peerName': PropertySchema(
-      id: 12,
+      id: 14,
       name: r'peerName',
       type: IsarType.string,
     ),
     r'peerSortOption': PropertySchema(
-      id: 13,
+      id: 15,
       name: r'peerSortOption',
       type: IsarType.long,
     ),
     r'peerSortOrder': PropertySchema(
-      id: 14,
+      id: 16,
       name: r'peerSortOrder',
       type: IsarType.long,
     ),
     r'preferEnmeshAdapter': PropertySchema(
-      id: 15,
+      id: 17,
       name: r'preferEnmeshAdapter',
       type: IsarType.bool,
     ),
     r'receiveBetaUpdates': PropertySchema(
-      id: 16,
+      id: 18,
       name: r'receiveBetaUpdates',
       type: IsarType.bool,
     ),
     r'reduceTopologyAnimations': PropertySchema(
-      id: 17,
+      id: 19,
       name: r'reduceTopologyAnimations',
       type: IsarType.bool,
     ),
     r'selectedRoomId': PropertySchema(
-      id: 18,
+      id: 20,
       name: r'selectedRoomId',
       type: IsarType.long,
     ),
@@ -135,6 +145,13 @@ int _allSettingsEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
+  bytesCount += 3 + object.androidVpnApps.length * 3;
+  {
+    for (var i = 0; i < object.androidVpnApps.length; i++) {
+      final value = object.androidVpnApps[i];
+      bytesCount += value.length * 3;
+    }
+  }
   bytesCount += 3 + object.androidVpnRoutes.length * 3;
   {
     for (var i = 0; i < object.androidVpnRoutes.length; i++) {
@@ -170,25 +187,27 @@ void _allSettingsSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeStringList(offsets[0], object.androidVpnRoutes);
-  writer.writeBool(offsets[1], object.automaticUpdateChecks);
-  writer.writeBool(offsets[2], object.closeToTray);
-  writer.writeBool(offsets[3], object.compactPeerCards);
-  writer.writeBool(offsets[4], object.connectAfterLaunch);
-  writer.writeBool(offsets[5], object.connectionNotificationEnabled);
-  writer.writeLong(offsets[6], object.connectionRetryLimit);
-  writer.writeBool(offsets[7], object.launchAtLogin);
-  writer.writeBool(offsets[8], object.launchToTray);
-  writer.writeString(offsets[9], object.missionControlOverridesJson);
-  writer.writeLong(offsets[10], object.peerDisplayMode);
-  writer.writeStringList(offsets[11], object.peerListeners);
-  writer.writeString(offsets[12], object.peerName);
-  writer.writeLong(offsets[13], object.peerSortOption);
-  writer.writeLong(offsets[14], object.peerSortOrder);
-  writer.writeBool(offsets[15], object.preferEnmeshAdapter);
-  writer.writeBool(offsets[16], object.receiveBetaUpdates);
-  writer.writeBool(offsets[17], object.reduceTopologyAnimations);
-  writer.writeLong(offsets[18], object.selectedRoomId);
+  writer.writeLong(offsets[0], object.androidVpnAppMode);
+  writer.writeStringList(offsets[1], object.androidVpnApps);
+  writer.writeStringList(offsets[2], object.androidVpnRoutes);
+  writer.writeBool(offsets[3], object.automaticUpdateChecks);
+  writer.writeBool(offsets[4], object.closeToTray);
+  writer.writeBool(offsets[5], object.compactPeerCards);
+  writer.writeBool(offsets[6], object.connectAfterLaunch);
+  writer.writeBool(offsets[7], object.connectionNotificationEnabled);
+  writer.writeLong(offsets[8], object.connectionRetryLimit);
+  writer.writeBool(offsets[9], object.launchAtLogin);
+  writer.writeBool(offsets[10], object.launchToTray);
+  writer.writeString(offsets[11], object.missionControlOverridesJson);
+  writer.writeLong(offsets[12], object.peerDisplayMode);
+  writer.writeStringList(offsets[13], object.peerListeners);
+  writer.writeString(offsets[14], object.peerName);
+  writer.writeLong(offsets[15], object.peerSortOption);
+  writer.writeLong(offsets[16], object.peerSortOrder);
+  writer.writeBool(offsets[17], object.preferEnmeshAdapter);
+  writer.writeBool(offsets[18], object.receiveBetaUpdates);
+  writer.writeBool(offsets[19], object.reduceTopologyAnimations);
+  writer.writeLong(offsets[20], object.selectedRoomId);
 }
 
 AllSettings _allSettingsDeserialize(
@@ -198,26 +217,28 @@ AllSettings _allSettingsDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = AllSettings();
-  object.androidVpnRoutes = reader.readStringList(offsets[0]) ?? [];
-  object.automaticUpdateChecks = reader.readBool(offsets[1]);
-  object.closeToTray = reader.readBool(offsets[2]);
-  object.compactPeerCards = reader.readBool(offsets[3]);
-  object.connectAfterLaunch = reader.readBool(offsets[4]);
-  object.connectionNotificationEnabled = reader.readBool(offsets[5]);
-  object.connectionRetryLimit = reader.readLong(offsets[6]);
+  object.androidVpnAppMode = reader.readLong(offsets[0]);
+  object.androidVpnApps = reader.readStringList(offsets[1]) ?? [];
+  object.androidVpnRoutes = reader.readStringList(offsets[2]) ?? [];
+  object.automaticUpdateChecks = reader.readBool(offsets[3]);
+  object.closeToTray = reader.readBool(offsets[4]);
+  object.compactPeerCards = reader.readBool(offsets[5]);
+  object.connectAfterLaunch = reader.readBool(offsets[6]);
+  object.connectionNotificationEnabled = reader.readBool(offsets[7]);
+  object.connectionRetryLimit = reader.readLong(offsets[8]);
   object.id = id;
-  object.launchAtLogin = reader.readBool(offsets[7]);
-  object.launchToTray = reader.readBool(offsets[8]);
-  object.missionControlOverridesJson = reader.readString(offsets[9]);
-  object.peerDisplayMode = reader.readLong(offsets[10]);
-  object.peerListeners = reader.readStringList(offsets[11]);
-  object.peerName = reader.readStringOrNull(offsets[12]);
-  object.peerSortOption = reader.readLong(offsets[13]);
-  object.peerSortOrder = reader.readLong(offsets[14]);
-  object.preferEnmeshAdapter = reader.readBool(offsets[15]);
-  object.receiveBetaUpdates = reader.readBool(offsets[16]);
-  object.reduceTopologyAnimations = reader.readBool(offsets[17]);
-  object.selectedRoomId = reader.readLongOrNull(offsets[18]);
+  object.launchAtLogin = reader.readBool(offsets[9]);
+  object.launchToTray = reader.readBool(offsets[10]);
+  object.missionControlOverridesJson = reader.readString(offsets[11]);
+  object.peerDisplayMode = reader.readLong(offsets[12]);
+  object.peerListeners = reader.readStringList(offsets[13]);
+  object.peerName = reader.readStringOrNull(offsets[14]);
+  object.peerSortOption = reader.readLong(offsets[15]);
+  object.peerSortOrder = reader.readLong(offsets[16]);
+  object.preferEnmeshAdapter = reader.readBool(offsets[17]);
+  object.receiveBetaUpdates = reader.readBool(offsets[18]);
+  object.reduceTopologyAnimations = reader.readBool(offsets[19]);
+  object.selectedRoomId = reader.readLongOrNull(offsets[20]);
   return object;
 }
 
@@ -229,11 +250,11 @@ P _allSettingsDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readStringList(offset) ?? []) as P;
+      return (reader.readLong(offset)) as P;
     case 1:
-      return (reader.readBool(offset)) as P;
+      return (reader.readStringList(offset) ?? []) as P;
     case 2:
-      return (reader.readBool(offset)) as P;
+      return (reader.readStringList(offset) ?? []) as P;
     case 3:
       return (reader.readBool(offset)) as P;
     case 4:
@@ -241,30 +262,34 @@ P _allSettingsDeserializeProp<P>(
     case 5:
       return (reader.readBool(offset)) as P;
     case 6:
-      return (reader.readLong(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 7:
       return (reader.readBool(offset)) as P;
     case 8:
-      return (reader.readBool(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 9:
-      return (reader.readString(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 10:
-      return (reader.readLong(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 11:
-      return (reader.readStringList(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 12:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 13:
-      return (reader.readLong(offset)) as P;
+      return (reader.readStringList(offset)) as P;
     case 14:
-      return (reader.readLong(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 15:
-      return (reader.readBool(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 16:
-      return (reader.readBool(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 17:
       return (reader.readBool(offset)) as P;
     case 18:
+      return (reader.readBool(offset)) as P;
+    case 19:
+      return (reader.readBool(offset)) as P;
+    case 20:
       return (reader.readLongOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -371,6 +396,255 @@ extension AllSettingsQueryWhere
 
 extension AllSettingsQueryFilter
     on QueryBuilder<AllSettings, AllSettings, QFilterCondition> {
+  QueryBuilder<AllSettings, AllSettings, QAfterFilterCondition>
+  androidVpnAppModeEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'androidVpnAppMode', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<AllSettings, AllSettings, QAfterFilterCondition>
+  androidVpnAppModeGreaterThan(int value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'androidVpnAppMode',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AllSettings, AllSettings, QAfterFilterCondition>
+  androidVpnAppModeLessThan(int value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'androidVpnAppMode',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AllSettings, AllSettings, QAfterFilterCondition>
+  androidVpnAppModeBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'androidVpnAppMode',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AllSettings, AllSettings, QAfterFilterCondition>
+  androidVpnAppsElementEqualTo(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'androidVpnApps',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AllSettings, AllSettings, QAfterFilterCondition>
+  androidVpnAppsElementGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'androidVpnApps',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AllSettings, AllSettings, QAfterFilterCondition>
+  androidVpnAppsElementLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'androidVpnApps',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AllSettings, AllSettings, QAfterFilterCondition>
+  androidVpnAppsElementBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'androidVpnApps',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AllSettings, AllSettings, QAfterFilterCondition>
+  androidVpnAppsElementStartsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'androidVpnApps',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AllSettings, AllSettings, QAfterFilterCondition>
+  androidVpnAppsElementEndsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'androidVpnApps',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AllSettings, AllSettings, QAfterFilterCondition>
+  androidVpnAppsElementContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'androidVpnApps',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AllSettings, AllSettings, QAfterFilterCondition>
+  androidVpnAppsElementMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'androidVpnApps',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AllSettings, AllSettings, QAfterFilterCondition>
+  androidVpnAppsElementIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'androidVpnApps', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<AllSettings, AllSettings, QAfterFilterCondition>
+  androidVpnAppsElementIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'androidVpnApps', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<AllSettings, AllSettings, QAfterFilterCondition>
+  androidVpnAppsLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(r'androidVpnApps', length, true, length, true);
+    });
+  }
+
+  QueryBuilder<AllSettings, AllSettings, QAfterFilterCondition>
+  androidVpnAppsIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(r'androidVpnApps', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<AllSettings, AllSettings, QAfterFilterCondition>
+  androidVpnAppsIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(r'androidVpnApps', 0, false, 999999, true);
+    });
+  }
+
+  QueryBuilder<AllSettings, AllSettings, QAfterFilterCondition>
+  androidVpnAppsLengthLessThan(int length, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(r'androidVpnApps', 0, true, length, include);
+    });
+  }
+
+  QueryBuilder<AllSettings, AllSettings, QAfterFilterCondition>
+  androidVpnAppsLengthGreaterThan(int length, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(r'androidVpnApps', length, include, 999999, true);
+    });
+  }
+
+  QueryBuilder<AllSettings, AllSettings, QAfterFilterCondition>
+  androidVpnAppsLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'androidVpnApps',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
+    });
+  }
+
   QueryBuilder<AllSettings, AllSettings, QAfterFilterCondition>
   androidVpnRoutesElementEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1571,6 +1845,20 @@ extension AllSettingsQueryLinks
 extension AllSettingsQuerySortBy
     on QueryBuilder<AllSettings, AllSettings, QSortBy> {
   QueryBuilder<AllSettings, AllSettings, QAfterSortBy>
+  sortByAndroidVpnAppMode() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'androidVpnAppMode', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AllSettings, AllSettings, QAfterSortBy>
+  sortByAndroidVpnAppModeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'androidVpnAppMode', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AllSettings, AllSettings, QAfterSortBy>
   sortByAutomaticUpdateChecks() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'automaticUpdateChecks', Sort.asc);
@@ -1801,6 +2089,20 @@ extension AllSettingsQuerySortBy
 
 extension AllSettingsQuerySortThenBy
     on QueryBuilder<AllSettings, AllSettings, QSortThenBy> {
+  QueryBuilder<AllSettings, AllSettings, QAfterSortBy>
+  thenByAndroidVpnAppMode() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'androidVpnAppMode', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AllSettings, AllSettings, QAfterSortBy>
+  thenByAndroidVpnAppModeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'androidVpnAppMode', Sort.desc);
+    });
+  }
+
   QueryBuilder<AllSettings, AllSettings, QAfterSortBy>
   thenByAutomaticUpdateChecks() {
     return QueryBuilder.apply(this, (query) {
@@ -2045,6 +2347,19 @@ extension AllSettingsQuerySortThenBy
 extension AllSettingsQueryWhereDistinct
     on QueryBuilder<AllSettings, AllSettings, QDistinct> {
   QueryBuilder<AllSettings, AllSettings, QDistinct>
+  distinctByAndroidVpnAppMode() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'androidVpnAppMode');
+    });
+  }
+
+  QueryBuilder<AllSettings, AllSettings, QDistinct> distinctByAndroidVpnApps() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'androidVpnApps');
+    });
+  }
+
+  QueryBuilder<AllSettings, AllSettings, QDistinct>
   distinctByAndroidVpnRoutes() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'androidVpnRoutes');
@@ -2180,6 +2495,19 @@ extension AllSettingsQueryProperty
   QueryBuilder<AllSettings, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
+    });
+  }
+
+  QueryBuilder<AllSettings, int, QQueryOperations> androidVpnAppModeProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'androidVpnAppMode');
+    });
+  }
+
+  QueryBuilder<AllSettings, List<String>, QQueryOperations>
+  androidVpnAppsProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'androidVpnApps');
     });
   }
 

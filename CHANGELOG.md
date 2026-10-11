@@ -7,6 +7,12 @@ provenance.
 
 ## Unreleased
 
+### Added
+
+- **Android per-app VPN.** Added an app picker that routes only selected apps
+  (allowlist) or excludes selected apps (denylist) from the VPN; Android only,
+  applied from the next connection on.
+
 ### Fixed
 
 - **Android rotation layout.** Fixed phones staying in the desktop sidebar

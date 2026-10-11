@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'installed_app.dart';
 import 'vpn_service_plugin_platform_interface.dart';
 
 class MethodChannelVpnServicePlugin extends VpnServicePluginPlatform {
@@ -20,6 +21,7 @@ class MethodChannelVpnServicePlugin extends VpnServicePluginPlatform {
     List<String>? routes,
     String? dns,
     List<String>? disallowedApplications,
+    List<String>? allowedApplications,
     int? mtu,
     String? connectionAttemptId,
   }) async {
@@ -29,6 +31,7 @@ class MethodChannelVpnServicePlugin extends VpnServicePluginPlatform {
           'routes': routes,
           'dns': dns,
           'disallowedApplications': disallowedApplications,
+          'allowedApplications': allowedApplications,
           'mtu': mtu,
           'connectionAttemptId': connectionAttemptId,
         });
@@ -46,5 +49,18 @@ class MethodChannelVpnServicePlugin extends VpnServicePluginPlatform {
     return methodChannel.invokeMethod<void>('configureLogging', {
       'minimumLevel': minimumLevel,
     });
+  }
+
+  @override
+  Future<List<InstalledApp>> getInstalledApps() async {
+    final result = await methodChannel.invokeMethod<List<Object?>>(
+      'getInstalledApps',
+    );
+    if (result == null) return const [];
+    return result
+        .whereType<Map>()
+        .map((map) => InstalledApp.fromMap(Map<Object?, Object?>.from(map)))
+        .where((app) => app.packageName.isNotEmpty)
+        .toList();
   }
 }

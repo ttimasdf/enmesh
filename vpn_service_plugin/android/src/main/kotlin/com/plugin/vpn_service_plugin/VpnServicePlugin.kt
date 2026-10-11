@@ -3,6 +3,10 @@ package com.plugin.vpn_service_plugin
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.net.VpnService
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -13,6 +17,7 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.EventChannel
+import java.io.ByteArrayOutputStream
 
 // VPN服务插件类，实现Flutter插件、方法调用处理和Activity感知接口
 class VpnServicePlugin: FlutterPlugin, MethodCallHandler, ActivityAware, ActivityResultListener {
@@ -28,6 +33,7 @@ class VpnServicePlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Activit
     private var pendingPrepareResult: Result? = null
     // 事件接收器
     private var eventSink: EventChannel.EventSink? = null
+    private val mainHandler = android.os.Handler(android.os.Looper.getMainLooper())
 
     // 插件附加到Flutter引擎时调用
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
@@ -127,6 +133,13 @@ class VpnServicePlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Activit
                         val disallowedAppsArray = disallowedAppsList.filterIsInstance<String>().toTypedArray()
                         serviceIntent.putExtra("DISALLOWED_APPLICATIONS", disallowedAppsArray)
                     }
+
+                    // 处理允许的应用列表（白名单模式）
+                    val allowedAppsList = args?.get("allowedApplications") as? List<*>
+                    if (allowedAppsList != null) {
+                        val allowedAppsArray = allowedAppsList.filterIsInstance<String>().toTypedArray()
+                        serviceIntent.putExtra("ALLOWED_APPLICATIONS", allowedAppsArray)
+                    }
                     
                     // 处理MTU
                     val mtu = args?.get("mtu")
@@ -150,6 +163,22 @@ class VpnServicePlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Activit
                 }
                 serviceContext.startService(stopIntent)
                 result.success(mapOf<String, Any>())
+            }
+            // 获取可启动的应用列表（用于分应用 VPN 选择器）
+            "getInstalledApps" -> {
+                // 枚举与图标编码可能较重，放到后台线程执行。
+                Thread {
+                    try {
+                        result.success(getInstalledApps())
+                    } catch (error: Exception) {
+                        NativeLogger.error(
+                            "vpn.plugin.installed_apps.failed",
+                            "Failed to enumerate installed apps",
+                            error = error,
+                        )
+                        mainHandler.post { result.error("vpn_native_error", error.message, null) }
+                    }
+                }.start()
             }
             else -> result.notImplemented()
         }
@@ -201,6 +230,63 @@ class VpnServicePlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Activit
         activity = binding.activity
         binding.addActivityResultListener(this)
     }
+
+    /** 枚举带启动器入口的应用（排除自身），按名称排序并携带图标 PNG 字节。 */
+    private fun getInstalledApps(): List<Map<String, Any?>> {
+        val pm = applicationContext.packageManager
+        val launcherIntent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
+        @Suppress("DEPRECATION")
+        val resolved = pm.queryIntentActivities(launcherIntent, 0)
+        val selfPackage = applicationContext.packageName
+
+        return resolved
+            .asSequence()
+            .mapNotNull { info ->
+                val packageName = info.activityInfo?.packageName ?: return@mapNotNull null
+                if (packageName == selfPackage) return@mapNotNull null
+                val label = try {
+                    info.loadLabel(pm).toString()
+                } catch (_: Exception) {
+                    packageName
+                }
+                InstalledAppEntry(packageName, label, info.loadIcon(pm))
+            }
+            .sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.label })
+            .map { entry ->
+                mapOf(
+                    "packageName" to entry.packageName,
+                    "label" to entry.label,
+                    "icon" to drawableToPngBytes(entry.icon),
+                )
+            }
+            .toList()
+    }
+
+    private fun drawableToPngBytes(icon: Drawable): ByteArray? {
+        return try {
+            val bitmap = when (icon) {
+                is BitmapDrawable -> icon.bitmap
+                else -> {
+                    val width = if (icon.intrinsicWidth > 0) icon.intrinsicWidth else 96
+                    val height = if (icon.intrinsicHeight > 0) icon.intrinsicHeight else 96
+                    Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888).also {
+                        Canvas(it).also { canvas -> icon.setBounds(0, 0, canvas.width, canvas.height); icon.draw(canvas) }
+                    }
+                }
+            }
+            val output = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, output)
+            output.toByteArray()
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    private data class InstalledAppEntry(
+        val packageName: String,
+        val label: String,
+        val icon: Drawable,
+    )
 
     private fun detachActivity() {
         activityBinding?.removeActivityResultListener(this)
