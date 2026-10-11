@@ -7,6 +7,15 @@ provenance.
 
 ## Unreleased
 
+### Added
+
+- **Android per-app VPN.** Added a searchable app picker with bulk selection,
+  system-app filter, sorting, and clipboard import/export; route only selected
+  apps (allowlist) or exclude them (denylist) from the VPN. Android only;
+  applies from the next connection on. ([#24])
+- **Android app-list permission.** The picker lists every installed app, which
+  requires the QUERY_ALL_PACKAGES permission on Android 11+. ([#24])
+
 ### Fixed
 
 - **Android rotation layout.** Fixed phones staying in the desktop sidebar
@@ -291,6 +300,7 @@ changes. ([upstream-v2.7.3])
 [#17]: https://github.com/ttimasdf/enmesh/pull/17
 [#21]: https://github.com/ttimasdf/enmesh/pull/21
 [#23]: https://github.com/ttimasdf/enmesh/pull/23
+[#24]: https://github.com/ttimasdf/enmesh/pull/24
 [nix-flutter-3.44]: https://github.com/ttimasdf/enmesh/commit/b5969b66ff7e2db6e8517413ccf01b9b2a6720a2
 [upstream-#74]: https://github.com/ldoubil/astral/issues/74
 [upstream-#226]: https://github.com/ldoubil/astral/issues/226

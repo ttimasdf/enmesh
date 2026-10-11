@@ -18,6 +18,24 @@ class AllSettings {
   /// Android VPN 额外路由
   List<String> androidVpnRoutes = [];
 
+  /// Android 分应用 VPN 模式（0: 全部应用, 1: 黑名单, 2: 白名单）
+  int androidVpnAppMode = 0;
+
+  /// Android 分应用 VPN 选中的应用包名列表
+  List<String> androidVpnApps = [];
+
+  /// Android 分应用 VPN 选择器：是否显示系统应用
+  bool androidVpnAppsShowSystem = false;
+
+  /// Android 分应用 VPN 选择器：是否仅显示已选应用
+  bool androidVpnAppsSelectedOnly = false;
+
+  /// Android 分应用 VPN 选择器：排序方式 (0: 名称, 1: 包名, 2: 安装时间, 3: 更新时间)
+  int androidVpnAppsSort = 0;
+
+  /// Android 分应用 VPN 选择器：是否倒序
+  bool androidVpnAppsReverse = false;
+
   /// 使用紧凑节点卡片
   bool compactPeerCards = true;
 

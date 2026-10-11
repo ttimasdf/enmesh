@@ -348,6 +348,53 @@ abstract class LocaleKeys {
   static const network_access_desc = 'network_access_desc';
   static const listen_list_desc = 'listen_list_desc';
   static const android_vpn_routes_desc = 'android_vpn_routes_desc';
+  static const android_vpn_apps = 'android_vpn_apps';
+  static const android_vpn_apps_desc = 'android_vpn_apps_desc';
+  static const android_vpn_apps_value_all = 'android_vpn_apps_value_all';
+  static const android_vpn_app_mode = 'android_vpn_app_mode';
+  static const android_vpn_app_mode_all = 'android_vpn_app_mode_all';
+  static const android_vpn_app_mode_all_desc = 'android_vpn_app_mode_all_desc';
+  static const android_vpn_app_mode_denylist = 'android_vpn_app_mode_denylist';
+  static const android_vpn_app_mode_denylist_desc =
+      'android_vpn_app_mode_denylist_desc';
+  static const android_vpn_app_mode_allowlist =
+      'android_vpn_app_mode_allowlist';
+  static const android_vpn_app_mode_allowlist_desc =
+      'android_vpn_app_mode_allowlist_desc';
+  static const android_vpn_apps_list_caption_denylist =
+      'android_vpn_apps_list_caption_denylist';
+  static const android_vpn_apps_list_caption_allowlist =
+      'android_vpn_apps_list_caption_allowlist';
+  static const android_vpn_apps_disabled_notice =
+      'android_vpn_apps_disabled_notice';
+  static const android_vpn_apps_empty_allowlist_notice =
+      'android_vpn_apps_empty_allowlist_notice';
+  static const android_vpn_apps_search_hint = 'android_vpn_apps_search_hint';
+  static const android_vpn_apps_selected_only =
+      'android_vpn_apps_selected_only';
+  static const android_vpn_apps_select_all = 'android_vpn_apps_select_all';
+  static const android_vpn_apps_select_none = 'android_vpn_apps_select_none';
+  static const android_vpn_apps_select_invert =
+      'android_vpn_apps_select_invert';
+  static const android_vpn_apps_menu_filter = 'android_vpn_apps_menu_filter';
+  static const android_vpn_apps_menu_sort = 'android_vpn_apps_menu_sort';
+  static const android_vpn_apps_menu_clipboard =
+      'android_vpn_apps_menu_clipboard';
+  static const android_vpn_apps_show_system = 'android_vpn_apps_show_system';
+  static const android_vpn_apps_sort_name = 'android_vpn_apps_sort_name';
+  static const android_vpn_apps_sort_package = 'android_vpn_apps_sort_package';
+  static const android_vpn_apps_sort_install_time =
+      'android_vpn_apps_sort_install_time';
+  static const android_vpn_apps_sort_update_time =
+      'android_vpn_apps_sort_update_time';
+  static const android_vpn_apps_sort_reverse = 'android_vpn_apps_sort_reverse';
+  static const android_vpn_apps_import = 'android_vpn_apps_import';
+  static const android_vpn_apps_export = 'android_vpn_apps_export';
+  static const android_vpn_apps_export_done = 'android_vpn_apps_export_done';
+  static const android_vpn_apps_import_done = 'android_vpn_apps_import_done';
+  static const android_vpn_apps_import_none = 'android_vpn_apps_import_none';
+  static const android_vpn_apps_load_failed = 'android_vpn_apps_load_failed';
+  static const android_vpn_apps_no_match = 'android_vpn_apps_no_match';
   static const allowed_virtual_network_ports = 'allowed_virtual_network_ports';
   static const allowed_virtual_network_ports_desc =
       'allowed_virtual_network_ports_desc';

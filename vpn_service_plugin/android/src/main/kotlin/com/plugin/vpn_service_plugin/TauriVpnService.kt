@@ -20,6 +20,7 @@ class TauriVpnService : VpnService() {
         const val ROUTES = "ROUTES"                          // 路由表
         const val DNS = "DNS"                                // DNS服务器
         const val DISALLOWED_APPLICATIONS = "DISALLOWED_APPLICATIONS"  // 不允许使用VPN的应用列表
+        const val ALLOWED_APPLICATIONS = "ALLOWED_APPLICATIONS"      // 允许使用VPN的应用列表（白名单模式）
         const val MTU = "MTU"                                // 最大传输单元
         const val CONNECTION_ATTEMPT_ID = "CONNECTION_ATTEMPT_ID"
         const val ACTION_STOP = "com.plugin.vpn_service_plugin.action.STOP"
@@ -229,6 +230,9 @@ class TauriVpnService : VpnService() {
         // 添加组播和广播地址到路由routes中
 
         val disallowedApplications = args.getStringArray(DISALLOWED_APPLICATIONS) ?: emptyArray()
+        // Android 不允许混用 addAllowedApplication 与 addDisallowedApplication；
+        // 白名单非空时优先使用白名单，忽略黑名单。
+        val allowedApplications = args.getStringArray(ALLOWED_APPLICATIONS) ?: emptyArray()
 
         NativeLogger.debug(
             "vpn.tun.configuration.ready",
@@ -236,7 +240,10 @@ class TauriVpnService : VpnService() {
             mapOf(
                 "mtu" to mtu,
                 "route_count" to routes.size,
-                "disallowed_application_count" to disallowedApplications.size,
+                "allowed_application_count" to allowedApplications.size,
+                "disallowed_application_count" to (
+                    if (allowedApplications.isEmpty()) disallowedApplications.size else 0
+                ),
                 "address_family" to "ipv4",
                 "connection_attempt_id" to args.getString(CONNECTION_ATTEMPT_ID),
             ),
@@ -264,9 +271,16 @@ class TauriVpnService : VpnService() {
             builder.addRoute(routeParts[0], routeParts[1].toInt())
         }
         
-        // 添加不允许使用VPN的应用
-        for (app in disallowedApplications) {
-            builder.addDisallowedApplication(app)
+        // 应用分流：白名单非空时仅允许列表内应用使用 VPN，否则使用黑名单
+        if (allowedApplications.isNotEmpty()) {
+            for (app in allowedApplications) {
+                builder.addAllowedApplication(app)
+            }
+        } else {
+            // 添加不允许使用VPN的应用
+            for (app in disallowedApplications) {
+                builder.addDisallowedApplication(app)
+            }
         }
 
 
