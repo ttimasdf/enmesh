@@ -11,7 +11,7 @@ provenance.
 
 - **Android per-app VPN.** Added an app picker that routes only selected apps
   (allowlist) or excludes selected apps (denylist) from the VPN; Android only,
-  applied from the next connection on.
+  applied from the next connection on. ([#24])
 
 ### Fixed
 
@@ -297,6 +297,7 @@ changes. ([upstream-v2.7.3])
 [#17]: https://github.com/ttimasdf/enmesh/pull/17
 [#21]: https://github.com/ttimasdf/enmesh/pull/21
 [#23]: https://github.com/ttimasdf/enmesh/pull/23
+[#24]: https://github.com/ttimasdf/enmesh/pull/24
 [nix-flutter-3.44]: https://github.com/ttimasdf/enmesh/commit/b5969b66ff7e2db6e8517413ccf01b9b2a6720a2
 [upstream-#74]: https://github.com/ldoubil/astral/issues/74
 [upstream-#226]: https://github.com/ldoubil/astral/issues/226
