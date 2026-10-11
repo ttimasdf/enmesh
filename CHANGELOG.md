@@ -9,9 +9,12 @@ provenance.
 
 ### Added
 
-- **Android per-app VPN.** Added an app picker that routes only selected apps
-  (allowlist) or excludes selected apps (denylist) from the VPN; Android only,
-  applied from the next connection on. ([#24])
+- **Android per-app VPN.** Added a searchable app picker with bulk selection,
+  system-app filter, sorting, and clipboard import/export; route only selected
+  apps (allowlist) or exclude them (denylist) from the VPN. Android only;
+  applies from the next connection on. ([#24])
+- **Android app-list permission.** The picker lists every installed app, which
+  requires the QUERY_ALL_PACKAGES permission on Android 11+. ([#24])
 
 ### Fixed
 

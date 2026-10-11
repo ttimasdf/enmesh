@@ -86,6 +86,14 @@ class AppSettingsService {
       AndroidVpnAppMode.fromIndex(settings.androidVpnAppMode),
     );
     vpnState.setAndroidVpnApps(List<String>.from(settings.androidVpnApps));
+    vpnState.setAndroidVpnAppsShowSystem(settings.androidVpnAppsShowSystem);
+    vpnState.setAndroidVpnAppsSelectedOnly(
+      settings.androidVpnAppsSelectedOnly,
+    );
+    vpnState.setAndroidVpnAppsSort(
+      AndroidVpnAppsSort.fromIndex(settings.androidVpnAppsSort),
+    );
+    vpnState.setAndroidVpnAppsReverse(settings.androidVpnAppsReverse);
   }
 
   Future<void> updatePlayerName(String name) async {
@@ -228,5 +236,25 @@ class AppSettingsService {
     final unique = packages.toSet().toList();
     vpnState.setAndroidVpnApps(unique);
     await _repo.update((s) => s.androidVpnApps = unique);
+  }
+
+  Future<void> setAndroidVpnAppsShowSystem(bool value) async {
+    vpnState.setAndroidVpnAppsShowSystem(value);
+    await _repo.update((s) => s.androidVpnAppsShowSystem = value);
+  }
+
+  Future<void> setAndroidVpnAppsSelectedOnly(bool value) async {
+    vpnState.setAndroidVpnAppsSelectedOnly(value);
+    await _repo.update((s) => s.androidVpnAppsSelectedOnly = value);
+  }
+
+  Future<void> setAndroidVpnAppsSort(AndroidVpnAppsSort sort) async {
+    vpnState.setAndroidVpnAppsSort(sort);
+    await _repo.update((s) => s.androidVpnAppsSort = sort.indexValue);
+  }
+
+  Future<void> setAndroidVpnAppsReverse(bool value) async {
+    vpnState.setAndroidVpnAppsReverse(value);
+    await _repo.update((s) => s.androidVpnAppsReverse = value);
   }
 }

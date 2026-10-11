@@ -3,6 +3,7 @@ package com.plugin.vpn_service_plugin
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
@@ -231,25 +232,39 @@ class VpnServicePlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Activit
         binding.addActivityResultListener(this)
     }
 
-    /** 枚举带启动器入口的应用（排除自身），按名称排序并携带图标 PNG 字节。 */
+    /** 枚举设备上已安装的应用（排除自身），携带图标、系统标记与安装/更新时间。 */
     private fun getInstalledApps(): List<Map<String, Any?>> {
         val pm = applicationContext.packageManager
-        val launcherIntent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
         @Suppress("DEPRECATION")
-        val resolved = pm.queryIntentActivities(launcherIntent, 0)
+        val packages = pm.getInstalledPackages(0)
         val selfPackage = applicationContext.packageName
 
-        return resolved
+        return packages
             .asSequence()
             .mapNotNull { info ->
-                val packageName = info.activityInfo?.packageName ?: return@mapNotNull null
+                val appInfo = info.applicationInfo ?: return@mapNotNull null
+                val packageName = info.packageName
                 if (packageName == selfPackage) return@mapNotNull null
                 val label = try {
-                    info.loadLabel(pm).toString()
+                    pm.getApplicationLabel(appInfo)?.toString()
                 } catch (_: Exception) {
-                    packageName
+                    null
+                } ?: packageName
+                val icon = try {
+                    appInfo.loadIcon(pm)
+                } catch (_: Exception) {
+                    null
                 }
-                InstalledAppEntry(packageName, label, info.loadIcon(pm))
+                InstalledAppEntry(
+                    packageName = packageName,
+                    label = label,
+                    icon = icon,
+                    system = (appInfo.flags and
+                        (ApplicationInfo.FLAG_SYSTEM or
+                            ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) != 0,
+                    installTime = info.firstInstallTime,
+                    updateTime = info.lastUpdateTime,
+                )
             }
             .sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.label })
             .map { entry ->
@@ -257,14 +272,18 @@ class VpnServicePlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Activit
                     "packageName" to entry.packageName,
                     "label" to entry.label,
                     "icon" to drawableToPngBytes(entry.icon),
+                    "system" to entry.system,
+                    "installTime" to entry.installTime,
+                    "updateTime" to entry.updateTime,
                 )
             }
             .toList()
     }
 
-    private fun drawableToPngBytes(icon: Drawable): ByteArray? {
+    private fun drawableToPngBytes(icon: Drawable?): ByteArray? {
+        if (icon == null) return null
         return try {
-            val bitmap = when (icon) {
+            var bitmap = when (icon) {
                 is BitmapDrawable -> icon.bitmap
                 else -> {
                     val width = if (icon.intrinsicWidth > 0) icon.intrinsicWidth else 96
@@ -273,6 +292,17 @@ class VpnServicePlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Activit
                         Canvas(it).also { canvas -> icon.setBounds(0, 0, canvas.width, canvas.height); icon.draw(canvas) }
                     }
                 }
+            }
+            // 统一缩放到 64px 以内，减小编码体积与耗时
+            val maxSize = maxOf(bitmap.width, bitmap.height)
+            if (maxSize > 64) {
+                val scale = 64f / maxSize
+                bitmap = Bitmap.createScaledBitmap(
+                    bitmap,
+                    (bitmap.width * scale).toInt().coerceAtLeast(1),
+                    (bitmap.height * scale).toInt().coerceAtLeast(1),
+                    true,
+                )
             }
             val output = ByteArrayOutputStream()
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, output)
@@ -285,7 +315,10 @@ class VpnServicePlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Activit
     private data class InstalledAppEntry(
         val packageName: String,
         val label: String,
-        val icon: Drawable,
+        val icon: Drawable?,
+        val system: Boolean,
+        val installTime: Long,
+        val updateTime: Long,
     )
 
     private fun detachActivity() {

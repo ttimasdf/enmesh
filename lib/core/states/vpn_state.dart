@@ -21,6 +21,23 @@ enum AndroidVpnAppMode {
   int get indexValue => index;
 }
 
+/// 分应用 VPN 选择器的排序方式（持久化为 int：0/1/2/3）
+enum AndroidVpnAppsSort {
+  name,
+  packageName,
+  installTime,
+  updateTime;
+
+  static AndroidVpnAppsSort fromIndex(int index) {
+    if (index < 0 || index >= values.length) {
+      return AndroidVpnAppsSort.name;
+    }
+    return values[index];
+  }
+
+  int get indexValue => index;
+}
+
 /// Android VPN 路由状态
 class VpnState {
   final androidVpnRoutes = signal<List<String>>([]);
@@ -28,6 +45,12 @@ class VpnState {
     AndroidVpnAppMode.disabled,
   );
   final androidVpnApps = signal<List<String>>([]);
+  final androidVpnAppsShowSystem = signal<bool>(false);
+  final androidVpnAppsSelectedOnly = signal<bool>(false);
+  final androidVpnAppsSort = signal<AndroidVpnAppsSort>(
+    AndroidVpnAppsSort.name,
+  );
+  final androidVpnAppsReverse = signal<bool>(false);
 
   void setAndroidVpnRoutes(List<String> routes) {
     androidVpnRoutes.value = routes;
@@ -51,5 +74,21 @@ class VpnState {
 
   void setAndroidVpnApps(List<String> packages) {
     androidVpnApps.value = List<String>.from(packages);
+  }
+
+  void setAndroidVpnAppsShowSystem(bool value) {
+    androidVpnAppsShowSystem.value = value;
+  }
+
+  void setAndroidVpnAppsSelectedOnly(bool value) {
+    androidVpnAppsSelectedOnly.value = value;
+  }
+
+  void setAndroidVpnAppsSort(AndroidVpnAppsSort sort) {
+    androidVpnAppsSort.value = sort;
+  }
+
+  void setAndroidVpnAppsReverse(bool value) {
+    androidVpnAppsReverse.value = value;
   }
 }
