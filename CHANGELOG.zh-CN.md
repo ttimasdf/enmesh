@@ -4,6 +4,29 @@
 `CHANGELOG.md` 是唯一权威来源。仅在版本提升（version bump）时翻译对应版本的
 章节；两次版本提升之间不维护此文件。
 
+## [v3.1.0-rc.1] - 2026-10-13
+
+> **版本亮点：** 全新的分应用过滤控制让你自由选择哪些 Android 应用使用 VPN。
+
+### 新增
+
+- **Android 分应用 VPN。** 新增可搜索的应用选择器，支持批量选择、系统应用过滤、排序
+  以及剪贴板导入导出；可仅让所选应用走 VPN（允许列表），或让所选应用绕过 VPN
+  （拒绝列表）。仅限 Android；从下次连接起生效。([#24])
+- **Android 应用列表权限。** 选择器会列出所有已安装应用，这需要 Android 11 及以上
+  版本的 QUERY_ALL_PACKAGES 权限。([#24])
+
+### 修复
+
+- **Android 旋转布局。** 修复手机在横竖屏切换后仍停留在桌面侧边栏布局的问题；现在
+  竖屏时会可靠地重新显示底部标签栏。([#23])
+
+### 开发者说明
+
+- **更新 API 构建门控。** 将 Vercel 的内联 ignored-build-step 命令替换为
+  `update-server/scripts/vercel-build-check.sh`，该脚本在前一次提交缺失时失败开放，
+  或与 `main` 比较差异，并取消来自非 `main` 分支的生产部署。
+
 ## [v3.0.0] - 2026-09-08
 
 > **版本亮点：** Enmesh 3.0：名称焕新，掌控更从容——重塑的任务控制台、路径感知拓扑界面、更清晰可信的诊断日志。
@@ -166,6 +189,8 @@
 [#15]: https://github.com/ttimasdf/enmesh/pull/15
 [#17]: https://github.com/ttimasdf/enmesh/pull/17
 [#21]: https://github.com/ttimasdf/enmesh/pull/21
+[#23]: https://github.com/ttimasdf/enmesh/pull/23
+[#24]: https://github.com/ttimasdf/enmesh/pull/24
 [nix-flutter-3.44]: https://github.com/ttimasdf/enmesh/commit/b5969b66ff7e2db6e8517413ccf01b9b2a6720a2
 [upstream-#74]: https://github.com/ldoubil/astral/issues/74
 [upstream-#226]: https://github.com/ldoubil/astral/issues/226
