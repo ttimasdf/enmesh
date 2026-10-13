@@ -7,11 +7,11 @@ provenance.
 
 ## Unreleased
 
-## [v3.1.0-rc.1] - 2026-10-13
+## [v3.1.0-rc.2] - 2026-10-13
 
 > **Highlight:** Choose exactly which Android apps use the VPN with the new per-app filtering controls.
 
-[中文更新日志](CHANGELOG.zh-CN.md#v310-rc1---2026-10-13)
+[中文更新日志](CHANGELOG.zh-CN.md#v310-rc2---2026-10-13)
 
 ### Added
 
@@ -327,5 +327,5 @@ changes. ([upstream-v2.7.3])
 [v2.8.0]: https://github.com/ttimasdf/enmesh/releases/tag/v2.8.0
 [v2.8.1]: https://github.com/ttimasdf/enmesh/releases/tag/v2.8.1
 [v3.0.0]: https://github.com/ttimasdf/enmesh/releases/tag/v3.0.0
-[v3.1.0-rc.1]: https://github.com/ttimasdf/enmesh/releases/tag/v3.1.0-rc.1
+[v3.1.0-rc.2]: https://github.com/ttimasdf/enmesh/releases/tag/v3.1.0-rc.2
 [v2.8.1-forward-port]: https://github.com/ttimasdf/enmesh/commit/73ff014c5d71e16df6226bfd46c9c806141af3f9
