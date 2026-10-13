@@ -18,6 +18,11 @@ version = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = version
 SPEC.loader.exec_module(version)
 
+# Tests must track the repository's current base version so a version bump does
+# not require editing hand-written literals throughout this file.
+BASE_VERSION = version.read_source().version
+OTHER_VERSION = "9.9.9"
+
 
 class VersionResolutionTest(unittest.TestCase):
     def test_pull_request_uses_head_commit_instead_of_merge_commit(self):
@@ -44,9 +49,9 @@ class VersionResolutionTest(unittest.TestCase):
 
         self.assertEqual(build.commit, "1234567")
         self.assertEqual(build.stage, "alpha")
-        self.assertEqual(build.semantic_version, "3.0.0-alpha.42+1234567")
-        self.assertEqual(build.asset_version, "3.0.0-alpha.42+1234567")
-        self.assertEqual(build.package_version, "3.0.0~alpha.42+1234567")
+        self.assertEqual(build.semantic_version, f"{BASE_VERSION}-alpha.42+1234567")
+        self.assertEqual(build.asset_version, f"{BASE_VERSION}-alpha.42+1234567")
+        self.assertEqual(build.package_version, f"{BASE_VERSION}~alpha.42+1234567")
         self.assertEqual(build.build_number, 1_000_000_042)
 
     def test_main_push_uses_beta_semver_and_canary_identity(self):
@@ -64,8 +69,8 @@ class VersionResolutionTest(unittest.TestCase):
 
         self.assertEqual(build.channel, "canary")
         self.assertEqual(build.stage, "beta")
-        self.assertEqual(build.semantic_version, "3.0.0-beta.43+1234567")
-        self.assertEqual(build.package_version, "3.0.0~beta.43+1234567")
+        self.assertEqual(build.semantic_version, f"{BASE_VERSION}-beta.43+1234567")
+        self.assertEqual(build.package_version, f"{BASE_VERSION}~beta.43+1234567")
         self.assertTrue(build.is_prerelease)
 
     def test_production_uses_release_semver_without_build_metadata(self):
@@ -73,8 +78,8 @@ class VersionResolutionTest(unittest.TestCase):
             os.environ,
             {
                 "GITHUB_ACTIONS": "true",
-                "GITHUB_REF": "refs/tags/v3.0.0",
-                "GITHUB_REF_NAME": "v3.0.0",
+                "GITHUB_REF": f"refs/tags/v{BASE_VERSION}",
+                "GITHUB_REF_NAME": f"v{BASE_VERSION}",
                 "GITHUB_SHA": "1234567890abcdef",
             },
             clear=True,
@@ -82,9 +87,9 @@ class VersionResolutionTest(unittest.TestCase):
             build = version.resolve("production")
 
         self.assertEqual(build.stage, "stable")
-        self.assertEqual(build.semantic_version, "3.0.0")
-        self.assertEqual(build.asset_version, "3.0.0")
-        self.assertEqual(build.package_version, "3.0.0")
+        self.assertEqual(build.semantic_version, BASE_VERSION)
+        self.assertEqual(build.asset_version, BASE_VERSION)
+        self.assertEqual(build.package_version, BASE_VERSION)
         self.assertEqual(build.build_number, version.read_source().build_number)
         self.assertFalse(build.is_prerelease)
 
@@ -93,8 +98,8 @@ class VersionResolutionTest(unittest.TestCase):
             os.environ,
             {
                 "GITHUB_ACTIONS": "true",
-                "GITHUB_REF": "refs/tags/v3.0.0-rc.2",
-                "GITHUB_REF_NAME": "v3.0.0-rc.2",
+                "GITHUB_REF": f"refs/tags/v{BASE_VERSION}-rc.2",
+                "GITHUB_REF_NAME": f"v{BASE_VERSION}-rc.2",
                 "GITHUB_RUN_NUMBER": "91",
                 "GITHUB_SHA": "1234567890abcdef",
             },
@@ -104,13 +109,18 @@ class VersionResolutionTest(unittest.TestCase):
 
         self.assertEqual(build.channel, "production")
         self.assertEqual(build.stage, "rc")
-        self.assertEqual(build.semantic_version, "3.0.0-rc.2")
-        self.assertEqual(build.package_version, "3.0.0~rc.2")
+        self.assertEqual(build.semantic_version, f"{BASE_VERSION}-rc.2")
+        self.assertEqual(build.package_version, f"{BASE_VERSION}~rc.2")
         self.assertEqual(build.build_number, version.read_source().build_number)
         self.assertTrue(build.is_prerelease)
 
     def test_production_rejects_noncanonical_prerelease_tags(self):
-        for tag in ("v3.0.0-rc", "v3.0.0-rc.0", "v3.0.0-beta.1", "v3.1.0-rc.1"):
+        for tag in (
+            f"v{BASE_VERSION}-rc",
+            f"v{BASE_VERSION}-rc.0",
+            f"v{BASE_VERSION}-beta.1",
+            f"v{OTHER_VERSION}-rc.1",
+        ):
             with self.subTest(tag=tag), patch.dict(
                 os.environ,
                 {
@@ -223,7 +233,7 @@ class VersionResolutionTest(unittest.TestCase):
         self.assertEqual(step_values["build_run_number"], "7")
         self.assertEqual(step_values["build_stage"], "beta")
         self.assertEqual(
-            step_values["semantic_version"], "3.0.0-beta.7+fedcba9"
+            step_values["semantic_version"], f"{BASE_VERSION}-beta.7+fedcba9"
         )
         self.assertEqual(step_values["is_prerelease"], "true")
         self.assertEqual(step_values["asset_version"], step_values["semantic_version"])
